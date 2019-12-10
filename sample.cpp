@@ -2,8 +2,8 @@
 #include "nn.h"
 using namespace std;
 
-constexpr auto EPOCH = 1000;
-constexpr auto LR = 0.0001;
+constexpr auto EPOCH = 5000;
+constexpr auto LR = 0.01;
 
 class Net :public nn::Module {
 public:
@@ -18,17 +18,18 @@ public:
 };
 
 int main() {
-	
-	nn::Var x(5, 1), y(5, 1);
-	for (int i = 0; i < 5; ++i) {
+	nn::Var x(50, 1), y(50, 1);
+	for (int i = 0; i < 50; ++i) {
 		x[i][0] = i;
-		y[i][0] = 3 * i * i + 2;
+		y[i][0] = 0.003 * i * i + 2;
 	}
 	x.print();
 	y.print();
 
 	auto net = nn::Sequential();
 	net.add_layer(nn::Linear(1, 5));
+	net.add_layer(nn::ReLU());
+	net.add_layer(nn::Linear(5, 5));
 	net.add_layer(nn::ReLU());
 	net.add_layer(nn::Linear(5, 1));
 	auto y_ = net(x);
@@ -37,13 +38,17 @@ int main() {
 
 	for (int i = 0; i < EPOCH; ++i) {
 		loss.calculate();
-		loss.print();
+		if (i % 500 == 0) {
+			cout << "STEP:" << i << endl;
+			loss.print();
+		}
 		//y_.print();
 
 		loss.zero_grad();
 		loss.backward();
-		loss.optim(nn::Var::SGD, LR);
+		loss.optim(nn::Var::Adam, LR);
 	}
+	y.print();
 	y_.print();
 
 	return 0;

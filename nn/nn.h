@@ -39,6 +39,10 @@ namespace nn {
 	public:
 		enum Var_op { none, equals, plus, minus, times, devides, mm, re, from_double, ones_like, ones_vector, means_op };
 		enum Optim { SGD, Adam };
+		//Adam Optimizer Parameters.
+		Matrix adam_m, adam_v;
+		int adam_t = 0;
+
 		//Graph_ptr is a pointer that points to the real Var on the calculation graph.
 		std::shared_ptr<Var> num1 = nullptr, num2 = nullptr, graph_ptr = nullptr;
 		Matrix data, grad;
@@ -84,6 +88,7 @@ namespace nn {
 		void cal(std::unordered_set<Var*>&);
 		void _backward();
 		void SGD_optim(double, std::unordered_set<Var*>&);
+		void Adam_optim(double, double, double, std::unordered_set<Var*>&);
 	};
 
 	//A Scalar class for Tensor.

@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <memory>
 #include <random>
+#include <cmath>
 #include "nn.h"
 
 namespace nn {
@@ -108,6 +109,9 @@ namespace nn {
 	}
 
 	void Var::optim(Optim func, double LR) {
+		//Adam opimizer hyper parameters.
+		constexpr auto b1 = 0.9, b2 = 0.999;
+
 		std::unordered_set<Var*> visited;
 		switch (func)
 		{
@@ -115,8 +119,7 @@ namespace nn {
 			SGD_optim(LR, visited);
 			break;
 		case Adam:
-			//Adam optimizer is not available now!
-			throw "No implement now!";
+			Adam_optim(LR, b1, b2, visited);
 			break;
 		default:
 			break;
@@ -135,5 +138,40 @@ namespace nn {
 			num1->SGD_optim(LR, visited);
 		if (num2 and num2->requires_grad)
 			num2->SGD_optim(LR, visited);
+	}
+
+	void Var::Adam_optim(double LR, double b1, double b2, std::unordered_set<Var*>& visited) {
+		if (visited.find(this) != visited.end())
+			return;
+		visited.insert(this);
+
+		if (requires_optim) {
+			++adam_t;
+
+			size_t m = data.shape.first, n = data.shape.second;
+			//Initialize.
+			constexpr auto eps = 1e-8;
+			if (adam_m.empty()) {
+				adam_m = Matrix(m, n);
+			}
+			if (adam_v.empty()) {
+				adam_v = Matrix(m, n);
+			}
+
+			//Update.
+			adam_m = Matrix(m, n, b1) * adam_m + Matrix(m, n, 1.0 - b1) * grad;
+			adam_v = Matrix(m, n, b2) * adam_v + Matrix(m, n, 1.0 - b2) * grad * grad;
+			auto adam_m_e = adam_m / Matrix(m, n, 1.0 - pow(b1, adam_t));
+			auto adam_v_e = adam_v / Matrix(m, n, 1.0 - pow(b2, adam_t));
+			//Sqrt.
+			for (auto& p : adam_v_e.data)
+				for (auto& q : p)
+					q = sqrt(q) + eps;
+			data -= Matrix(m, n, LR) * adam_m_e / adam_v_e;
+		}
+		if (num1 and num1->requires_grad)
+			num1->Adam_optim(LR, b1, b2, visited);
+		if (num2 and num2->requires_grad)
+			num2->Adam_optim(LR, b1, b2, visited);
 	}
 }
