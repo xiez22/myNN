@@ -6,6 +6,7 @@ A simple nerual network framework in C++.
 - Completed the implementation of `operator=` in class `Var`.
 - Improve performance of `Linear` and `Sequential` with `operator=`.
 - Add the move constructor for `Var`.
+- Completed the implementation of Adam Optimizer.
 
 # How to use?
 - The files are in `\nn` folder. The sample file is just in the root directory.
@@ -22,7 +23,12 @@ A simple nerual network framework in C++.
   //And now you can calculate it!
   //Set the data of Var a.
   a.data = x;
-  c.calculate()
+  c.calculate();
+
+  //Calculate the grad.
+  c.backward();
+  //Print the grad of the a.
+  a._grad().print();
   ```
 - To define a network like this:
   ``` C++
@@ -64,17 +70,16 @@ A simple nerual network framework in C++.
   for (int i = 0; i < EPOCH; ++i) {
 		loss.calculate();
 		loss.print();
-		//y_.print();
 
 		loss.zero_grad();
 		loss.backward();
-		loss.optim(nn::Var::SGD, LR);
+		loss.optim(nn::Var::Adam, LR);
 	}
 	y_.print();
   ```
 
 ## Tips & Bugs
-- Unfinished implement of the Adam Optimizer.
+- Adam Optimizer could be very __SLOW__ !ヽ(*。>Д<)o゜>)
 - Unfinished implement of the `Tensor` class.
 - __(IMPORTANT)__ Due to the restrictions of `C++`, there are some differences between `Var(const Var&)` and `Var(Var&&)`. Only values will be copied when using the former. So when you want to copy a `Var`, you are supposed to write the code like this:
   ``` C++
@@ -82,3 +87,11 @@ A simple nerual network framework in C++.
   auto y = std::move(x);
   ```
   With the help of `std::move()` in C++11, you can transform a left value to a right value in order to call the move constuctor instead of copy constructor.
+- The variables defined by yourself may not on the calculation graph. So we offer a function `graph()`, which returns a `Var` value that points to the node on the calculation graph. When you want to print the grad, you can write like this:
+  ``` C++
+  nn::Var x(init_val);
+  auto y = x * x;
+  y.calculate();
+  y.backward();
+  x._grad().print();
+  ``` 
