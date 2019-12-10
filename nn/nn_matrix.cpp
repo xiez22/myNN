@@ -104,8 +104,13 @@ namespace nn {
 		std::cout << "[" << std::endl;
 		for (auto p : data) {
 			std::cout << "[";
+			bool flag = true;
 			for (auto q : p) {
-				std::cout << q << " ";
+				if (flag)
+					flag = false;
+				else
+					std::cout << " ";
+				std::cout << q;
 			}
 			std::cout << "]" << std::endl;
 		}

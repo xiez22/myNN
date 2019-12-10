@@ -18,7 +18,7 @@ namespace nn {
 	Var ones_like(Var& rhs) {
 		Var ans;
 		ans.op = Var::ones_like;
-		ans.num1 = std::make_shared<Var>(rhs);
+		ans.num1 = std::make_shared<Var>(std::move(rhs));
 		return ans;
 	}
 	Var ones_like(Var&& rhs) {

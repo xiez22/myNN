@@ -22,8 +22,7 @@ namespace nn {
 		auto y = x.matmul(w);
 		if (if_b) {
 			auto b = ones_vector(x);
-			auto z = y + b.matmul(w_b);
-			return z;
+			y = y + b.matmul(w_b);
 		}
 		return y;
 	}
@@ -34,10 +33,8 @@ namespace nn {
 	}
 
 	Var Sequential::forward(Var x) {
-		std::vector<Var> ans;
-		ans.emplace_back(x);
 		for (auto mod : seq_data)
-			ans.emplace_back(mod->operator()(ans.back()));
-		return ans.back();
+			x = mod->operator()(x);
+		return x;
 	}
 }

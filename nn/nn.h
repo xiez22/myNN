@@ -48,7 +48,8 @@ namespace nn {
 
 		Var() = default;
 		Var(const Matrix& matrix) :data(matrix) {}
-		Var(const Var& rhs) = default;
+		Var(Var&& rhs);
+		Var(const Var&) = default;
 		Var(const std::vector<std::vector<double>>& v) :data(v) {}
 		Var(int m, int n, bool init_random = false, double rand_mean = 0.0, double rand_std = 1.0);
 		~Var();

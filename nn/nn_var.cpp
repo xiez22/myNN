@@ -28,22 +28,26 @@ namespace nn {
 					q = n(e);
 		}
 	}
+	Var::Var(Var&& rhs) :Var(rhs) {
+		if (rhs.graph_ptr)
+			graph_ptr = rhs.graph_ptr;
+		else
+			graph_ptr = rhs.graph_ptr = std::make_shared<Var>(rhs);
+	}
 
 	Var Var::operator=(Var& rhs) {
-		op = equals;
 		if (rhs.graph_ptr)
-			num1 = rhs.graph_ptr;
+			graph_ptr = rhs.graph_ptr;
 		else
-			rhs.graph_ptr = num1 = std::make_shared<Var>(rhs);
-		return *this;
+			graph_ptr = rhs.graph_ptr = std::make_shared<Var>(rhs);
+		return rhs;
 	}
 	Var Var::operator=(Var&& rhs) {
-		op = equals;
 		if (rhs.graph_ptr)
-			num1 = rhs.graph_ptr;
+			graph_ptr = rhs.graph_ptr;
 		else
-			rhs.graph_ptr = num1 = std::make_shared<Var>(rhs);
-		return *this;
+			graph_ptr = rhs.graph_ptr = std::make_shared<Var>(rhs);
+		return rhs;
 	}
 	Var Var::operator+(Var& rhs) {
 		Var ans;
@@ -198,7 +202,10 @@ namespace nn {
 
 	void Var::calculate() {
 		std::unordered_set<Var*> visited;
-		cal(visited);
+		if (graph_ptr)
+			graph_ptr->cal(visited);
+		else
+			cal(visited);
 	}
 	void Var::cal(std::unordered_set<Var*>& visited) {
 		if (visited.find(this) != visited.end())
@@ -273,8 +280,9 @@ namespace nn {
 	}
 
 	Var Var::graph() const {
-		if (!graph_ptr)
+		if (!graph_ptr) {
 			return *this;
+		}
 		else
 			return graph_ptr->graph();
 	}

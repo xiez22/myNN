@@ -1,10 +1,29 @@
 # myNN
 A simple nerual network framework in C++.
 
+# Update
+## 2019/12/10
+- Completed the implementation of `operator=` in class `Var`.
+- Improve performance of `Linear` and `Sequential` with `operator=`.
+- Add the move constructor for `Var`.
+
 # How to use?
 - The files are in `\nn` folder. The sample file is just in the root directory.
 - Build with C++11 or higher.
 - First of all, you should include `nn.h`.
+- `Var` is a class with which you can easily build a caculation graph. Sample:
+  ``` C++
+  //The shape of matrix x is 2×3 and its val is 1.
+  nn::Matrix x(2,3,1.0); 
+  //The shape of a is 2×3. The shape of b is 3×2 and it is a random array.
+  nn::Var a(2,3),b(3,2,true);
+  auto c = a.matmul(b);
+
+  //And now you can calculate it!
+  //Set the data of Var a.
+  a.data = x;
+  c.calculate()
+  ```
 - To define a network like this:
   ``` C++
   class Net :public nn::Module {
@@ -55,6 +74,11 @@ A simple nerual network framework in C++.
   ```
 
 ## Tips & Bugs
-- Unfinished implement of the `operator=`.
 - Unfinished implement of the Adam Optimizer.
 - Unfinished implement of the `Tensor` class.
+- __(IMPORTANT)__ Due to the restrictions of `C++`, there are some differences between `Var(const Var&)` and `Var(Var&&)`. Only values will be copied when using the former. So when you want to copy a `Var`, you are supposed to write the code like this:
+  ``` C++
+  nn::Var x(1,2);
+  auto y = std::move(x);
+  ```
+  With the help of `std::move()` in C++11, you can transform a left value to a right value in order to call the move constuctor instead of copy constructor.

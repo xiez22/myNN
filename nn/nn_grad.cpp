@@ -15,8 +15,13 @@ namespace nn {
 	}
 
 	void Var::backward() {
-		grad = Matrix(data.shape.first, data.shape.second, 1.0);
-		_backward();
+		if (not graph_ptr) {
+			grad = Matrix(data.shape.first, data.shape.second, 1.0);
+			_backward();
+		}
+		else {
+			graph_ptr->backward();
+		}
 	}
 
 	void Var::_backward() {
