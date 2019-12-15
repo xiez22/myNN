@@ -7,7 +7,7 @@
 
 namespace nn {
 	//----------------------------VAR-----------------------------------
-	std::pair<int, int> Var::shape() const {
+	std::pair<size_t, size_t> Var::shape() const {
 		return data.shape;
 	}
 	void Var::print() const {
@@ -189,6 +189,15 @@ namespace nn {
 			graph_ptr = ans.num1 = std::make_shared<Var>(*this);
 		return ans;
 	}
+	Var Var::tanh() {
+		Var ans;
+		ans.op = th;
+		if (graph_ptr)
+			ans.num1 = graph_ptr;
+		else
+			graph_ptr = ans.num1 = std::make_shared<Var>(*this);
+		return ans;
+	}
 	Var Var::mean() {
 		Var ans;
 		ans.op = means_op;
@@ -198,6 +207,7 @@ namespace nn {
 			graph_ptr = ans.num1 = std::make_shared<Var>(*this);
 		return ans;
 	}
+
 
 
 	void Var::calculate() {
@@ -247,6 +257,13 @@ namespace nn {
 		case nn::Var::re:
 			num1->cal(visited);
 			data = num1->data.relu();
+			break;
+		case nn::Var::th:
+			num1->cal(visited);
+			data = Matrix(num1->shape().first, num1->shape().second);
+			for (size_t i = 0; i < num1->shape().first; ++i)
+				for (size_t j = 0; j < num1->shape().second; ++j)
+					data.data[i][j] = ::tanh(num1->data.data[i][j]);
 			break;
 		case nn::Var::from_double:
 			num2->cal(visited);

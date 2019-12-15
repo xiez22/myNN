@@ -37,7 +37,7 @@ namespace nn {
 	//A Var class that includes some basic NN functions.
 	class Var {
 	public:
-		enum Var_op { none, equals, plus, minus, times, devides, mm, re, from_double, ones_like, ones_vector, means_op };
+		enum Var_op { none, equals, plus, minus, times, devides, mm, re, th, from_double, ones_like, ones_vector, means_op };
 		enum Optim { SGD, Adam };
 		//Adam Optimizer Parameters.
 		Matrix adam_m, adam_v;
@@ -58,7 +58,7 @@ namespace nn {
 		Var(int m, int n, bool init_random = false, double rand_mean = 0.0, double rand_std = 1.0);
 		~Var();
 
-		std::pair<int, int> shape() const;
+		std::pair<size_t, size_t> shape() const;
 		void print() const;
 		Var graph() const;
 		Matrix _data();
@@ -78,6 +78,7 @@ namespace nn {
 		Var matmul(Var& rhs);
 		Var matmul(Var&& rhs);
 		Var relu();
+		Var tanh();
 		Var mean();
 
 		void calculate();
@@ -141,6 +142,12 @@ namespace nn {
 	class ReLU :public Module {
 	public:
 		ReLU() = default;
+		Var forward(Var);
+	};
+
+	class TanH :public Module {
+	public:
+		TanH() = default;
 		Var forward(Var);
 	};
 

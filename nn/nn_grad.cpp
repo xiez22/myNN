@@ -54,6 +54,12 @@ namespace nn {
 					for (size_t j = 0; j < data.shape.second; ++j)
 						num1->grad.data[i][j] += (num1->data.data[i][j] > 0 ? 1 : 0)* grad[i][j];
 				break;
+			case nn::Var::th:
+				for (size_t i = 0; i < data.shape.first; ++i)
+					for (size_t j = 0; j < data.shape.second; ++j)
+						num1->grad.data[i][j] += (1.0 - ::tanh(num1->data.data[i][j]) *
+							::tanh(num1->data.data[i][j])) * grad[i][j];
+				break;
 			case nn::Var::means_op:
 				num1->grad = Matrix(num1->data.shape.first, num1->data.shape.second, 1.0 / ((double)num1->data.shape.first * (double)num1->data.shape.second));
 				break;

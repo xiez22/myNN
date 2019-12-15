@@ -32,6 +32,11 @@ namespace nn {
 		return y;
 	}
 
+	Var TanH::forward(Var x) {
+		auto y = x.tanh();
+		return y;
+	}
+
 	Var Sequential::forward(Var x) {
 		for (auto mod : seq_data)
 			x = mod->operator()(x);

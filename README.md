@@ -2,6 +2,9 @@
 A simple nerual network framework in C++.
 
 # Update
+## 2019/12/15
+- Add `tanh` function and `TanH` class. But they have not been tested yet.
+
 ## 2019/12/10
 - Completed the implementation of `operator=` in class `Var`.
 - Improve performance of `Linear` and `Sequential` with `operator=`.
