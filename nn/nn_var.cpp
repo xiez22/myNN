@@ -16,7 +16,9 @@ namespace nn {
 		to_print.data.print();
 	}
 	std::vector<double>& Var::operator[](size_t n) {
-		return data[n];
+		if (graph_ptr)
+			return (graph_ptr->data[n]);
+		return graph_ptr->data[n];
 	}
 	Var::~Var() {}
 	Var::Var(int m, int n, bool init_random, double rand_mean, double rand_std) :data(m, n) {
@@ -207,8 +209,15 @@ namespace nn {
 			graph_ptr = ans.num1 = std::make_shared<Var>(*this);
 		return ans;
 	}
-
-
+	Var Var::copy() {
+		Var ans;
+		ans.op = equals;
+		if (graph_ptr)
+			ans.num1 = graph_ptr;
+		else
+			graph_ptr = ans.num1 = std::make_shared<Var>(*this);
+		return ans;
+	}
 
 	void Var::calculate() {
 		std::unordered_set<Var*> visited;
@@ -310,5 +319,9 @@ namespace nn {
 
 	Matrix Var::_grad() {
 		return graph().grad;
+	}
+
+	bool Var::empty() const {
+		return data.empty();
 	}
 }

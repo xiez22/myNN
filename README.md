@@ -2,6 +2,29 @@
 A simple nerual network framework in C++.
 
 # Update
+## 2019/12/16
+- __`RNN` MODULE !!!__
+  It seems realy easy to add it, but I found tons of bugs when testing it. It tooks a lot of time to fix the bugs, since the stucture of the framework is really complicated.{{{(>_<)}}}>)}}}
+  When using `RNN`, you should first initialize it.
+  ``` C++
+  auto rnn = nn::RNN();
+  //Build the net.
+  //......
+  //Init it.
+  rnn.init(BATCH_SIZE);
+  
+  for(size_t epoch = 0; epoch < EPOCH; ++epoch){
+      //Train loop.
+      //......
+    
+      //Call rnn.cycle() to update the hidden states.
+      rnn.cycle();
+  }
+  ```
+  __But `RNN` module has not been fully tested yet.__
+- Fixed lots of bugs.
+- Tested the `tanh` function and it works well.
+
 ## 2019/12/15
 - Add `tanh` function and `TanH` class. But they have not been tested yet.
 

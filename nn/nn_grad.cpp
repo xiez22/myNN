@@ -32,7 +32,6 @@ namespace nn {
 			case nn::Var::none:
 				break;
 			case nn::Var::equals:
-				num1->grad = grad;
 				break;
 			case nn::Var::plus:
 				num1->grad += grad;
@@ -56,9 +55,10 @@ namespace nn {
 				break;
 			case nn::Var::th:
 				for (size_t i = 0; i < data.shape.first; ++i)
-					for (size_t j = 0; j < data.shape.second; ++j)
-						num1->grad.data[i][j] += (1.0 - ::tanh(num1->data.data[i][j]) *
-							::tanh(num1->data.data[i][j])) * grad[i][j];
+					for (size_t j = 0; j < data.shape.second; ++j) {
+						auto tmp_num = ::tanh(num1->data.data[i][j]);
+						num1->grad.data[i][j] += (1.0 - tmp_num * tmp_num) * grad[i][j];
+					}
 				break;
 			case nn::Var::means_op:
 				num1->grad = Matrix(num1->data.shape.first, num1->data.shape.second, 1.0 / ((double)num1->data.shape.first * (double)num1->data.shape.second));
@@ -80,7 +80,6 @@ namespace nn {
 			case nn::Var::none:
 				break;
 			case nn::Var::equals:
-				num2->grad = grad;
 				break;
 			case nn::Var::plus:
 				num2->grad += grad;

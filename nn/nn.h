@@ -64,6 +64,8 @@ namespace nn {
 		Matrix _data();
 		Matrix _grad();
 		std::vector<double>& operator[](size_t n);
+		bool empty() const;
+		Var copy();
 
 		Var operator=(Var& rhs);
 		Var operator=(Var&& rhs);
@@ -125,9 +127,10 @@ namespace nn {
 		Var in_layer;
 	public:
 		Module() = default;
-		Var operator()(const Var&);
+		Var operator()(Var&);
+		Var operator()(Var&&);
 
-		virtual Var forward(Var) = 0;
+		virtual Var forward(Var&) = 0;
 	};
 
 	class Linear :public Module {
@@ -136,19 +139,34 @@ namespace nn {
 		Var w, w_b;
 	public:
 		Linear(size_t in_features, size_t out_features, bool bias = true);
-		Var forward(Var);
+		Var forward(Var&);
+	};
+
+	class RNN :public Module {
+		size_t m = 0, n = 0;
+		bool if_b = true, if_tanh = true;
+		Var wih, whh, w_b;
+	public:
+		//A var to storage the hidden states.
+		Var h_states, h_states_tmp;
+		RNN(size_t in_features, size_t out_features,
+			bool bias = true, bool nonlinearity = true);
+		//Clear the hidden states.
+		void init(size_t batch_size);
+		void cycle();
+		Var forward(Var&) override;
 	};
 
 	class ReLU :public Module {
 	public:
 		ReLU() = default;
-		Var forward(Var);
+		Var forward(Var&);
 	};
 
 	class TanH :public Module {
 	public:
 		TanH() = default;
-		Var forward(Var);
+		Var forward(Var&);
 	};
 
 	class Sequential :public Module {
@@ -160,8 +178,10 @@ namespace nn {
 			seq_data.emplace_back(std::make_shared<Module_Type>(layer));
 		}
 
-		Var forward(Var);
+		Var forward(Var&);
 	};
+
+	
 
 	//-------------------Functions--------------------------
 	Var zeros(size_t m, size_t n);
