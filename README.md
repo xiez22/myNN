@@ -4,6 +4,8 @@ A simple nerual network framework in C++.
 # Update
 ## 2019/12/19
 - Add `solve_linear_equation` and `linear_regression` function to solve naive regression problems.
+- Add `abs` function.
+- Fixed some bugs.
 
 ## 2019/12/16
 - __`RNN` MODULE !!!__
