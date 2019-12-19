@@ -2,6 +2,9 @@
 A simple nerual network framework in C++.
 
 # Update
+## 2019/12/19
+- Add `solve_linear_equation` and `linear_regression` function to solve naive regression problems.
+
 ## 2019/12/16
 - __`RNN` MODULE !!!__
   It seems realy easy to add it, but I found tons of bugs when testing it. It tooks a lot of time to fix the bugs, since the stucture of the framework is really complicated.{{{(>_<)}}}>)}}}

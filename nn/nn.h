@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <unordered_set>
+#include <tuple>
 
 namespace nn {
 	//A simple matrix class to implement basic matrix operations.
@@ -195,4 +196,9 @@ namespace nn {
 	Var shape_as(Var&&, double val = 0.0);
 
 	Var MSE_Loss(Var& pred, Var& label);
+	
+	//Input:X,Y Output:W,B
+	std::vector<double> solve_linear_equation(const std::vector<std::vector<double>>& A, const std::vector<double>& B);
+	std::tuple<std::vector<double>, double>
+		linear_regression(const std::vector<std::vector<double>>&, const std::vector<double>&);
 }
