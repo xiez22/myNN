@@ -18,7 +18,7 @@ namespace nn {
 	std::vector<double>& Var::operator[](size_t n) {
 		if (graph_ptr)
 			return (graph_ptr->data[n]);
-		return graph_ptr->data[n];
+		return data[n];
 	}
 	Var::~Var() {}
 	Var::Var(int m, int n, bool init_random, double rand_mean, double rand_std) :data(m, n) {
@@ -200,6 +200,15 @@ namespace nn {
 			graph_ptr = ans.num1 = std::make_shared<Var>(*this);
 		return ans;
 	}
+	Var Var::abs() {
+		Var ans;
+		ans.op = ab;
+		if (graph_ptr)
+			ans.num1 = graph_ptr;
+		else
+			graph_ptr = ans.num1 = std::make_shared<Var>(*this);
+		return ans;
+	}
 	Var Var::mean() {
 		Var ans;
 		ans.op = means_op;
@@ -273,6 +282,13 @@ namespace nn {
 			for (size_t i = 0; i < num1->shape().first; ++i)
 				for (size_t j = 0; j < num1->shape().second; ++j)
 					data.data[i][j] = ::tanh(num1->data.data[i][j]);
+			break;
+		case nn::Var::ab:
+			num1->cal(visited);
+			data = Matrix(num1->shape().first, num1->shape().second);
+			for (size_t i = 0; i < num1->shape().first; ++i)
+				for (size_t j = 0; j < num1->shape().second; ++j)
+					data.data[i][j] = ::abs(num1->data.data[i][j]);
 			break;
 		case nn::Var::from_double:
 			num2->cal(visited);

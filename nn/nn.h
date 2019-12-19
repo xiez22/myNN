@@ -38,7 +38,7 @@ namespace nn {
 	//A Var class that includes some basic NN functions.
 	class Var {
 	public:
-		enum Var_op { none, equals, plus, minus, times, devides, mm, re, th, from_double, ones_like, ones_vector, means_op };
+		enum Var_op { none, equals, plus, minus, times, devides, mm, re, th, ab, from_double, ones_like, ones_vector, means_op };
 		enum Optim { SGD, Adam };
 		//Adam Optimizer Parameters.
 		Matrix adam_m, adam_v;
@@ -83,6 +83,7 @@ namespace nn {
 		Var relu();
 		Var tanh();
 		Var mean();
+		Var abs();
 
 		void calculate();
 		void zero_grad();
