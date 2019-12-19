@@ -62,6 +62,7 @@ namespace nn {
 		std::pair<size_t, size_t> shape() const;
 		void print() const;
 		Var graph() const;
+		Var& graph_data();
 		Matrix _data();
 		Matrix _grad();
 		std::vector<double>& operator[](size_t n);

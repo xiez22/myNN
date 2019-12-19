@@ -317,7 +317,7 @@ namespace nn {
 		}
 
 		//Create grad Var.
-		if (requires_grad and grad.empty())
+		if (requires_grad and (grad.empty() or grad.shape != data.shape))
 			grad = Matrix(data.shape.first, data.shape.second);
 	}
 
@@ -327,6 +327,13 @@ namespace nn {
 		}
 		else
 			return graph_ptr->graph();
+	}
+
+	Var& Var::graph_data() {
+		if (!graph_ptr)
+			return *this;
+		else
+			return graph_ptr->graph_data();
 	}
 
 	Matrix Var::_data() {

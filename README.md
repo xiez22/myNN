@@ -5,7 +5,8 @@ A simple nerual network framework in C++.
 ## 2019/12/19
 - Add `solve_linear_equation` and `linear_regression` function to solve naive regression problems.
 - Add `abs` function.
-- Fixed some bugs.
+- Add `graph_data` function in `nn::Var`.
+- Fixed many bugs.
 
 ## 2019/12/16
 - __`RNN` MODULE !!!__
@@ -53,7 +54,7 @@ A simple nerual network framework in C++.
 
   //And now you can calculate it!
   //Set the data of Var a.
-  a.data = x;
+  a.graph_data().data = x;
   c.calculate();
 
   //Calculate the grad.

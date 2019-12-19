@@ -78,8 +78,9 @@ namespace nn {
 	}
 
 	Var Sequential::forward(Var& x) {
+		auto y = std::move(x);
 		for (auto mod : seq_data)
-			x = mod->operator()(x);
-		return x;
+			y = mod->operator()(y);
+		return y;
 	}
 }
