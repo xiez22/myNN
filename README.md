@@ -2,6 +2,13 @@
 A simple nerual network framework in C++.
 
 # Update
+## 2019/12/20
+- Add `sigmoid` function and `Sigmoid` module.
+- Add `LSTM` module.
+- Change `RNN` module into `RNNCell` module.
+- __The RNN module and LSTM module is deprecated now. DO NOT use them in the version.__
+- Add `set_data` function in `nn::Var`.
+- Fix some bugs.
 ## 2019/12/19
 - Add `solve_linear_equation` and `linear_regression` function to solve naive regression problems.
 - Add `abs` function.

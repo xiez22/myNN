@@ -38,7 +38,7 @@ namespace nn {
 	//A Var class that includes some basic NN functions.
 	class Var {
 	public:
-		enum Var_op { none, equals, plus, minus, times, devides, mm, re, th, ab, from_double, ones_like, ones_vector, means_op };
+		enum Var_op { none, equals, plus, minus, times, devides, mm, re, th, ab, sig, from_double, ones_like, ones_vector, means_op };
 		enum Optim { SGD, Adam };
 		//Adam Optimizer Parameters.
 		Matrix adam_m, adam_v;
@@ -63,11 +63,13 @@ namespace nn {
 		void print() const;
 		Var graph() const;
 		Var& graph_data();
-		Matrix _data();
-		Matrix _grad();
+		Matrix _data() const;
+		Matrix _grad() const;
 		std::vector<double>& operator[](size_t n);
 		bool empty() const;
 		Var copy();
+		void set_data(const Matrix&);
+		void set_data(const Var&);
 
 		Var operator=(Var& rhs);
 		Var operator=(Var&& rhs);
@@ -83,6 +85,7 @@ namespace nn {
 		Var matmul(Var&& rhs);
 		Var relu();
 		Var tanh();
+		Var sigmoid();
 		Var mean();
 		Var abs();
 
@@ -145,15 +148,43 @@ namespace nn {
 		Var forward(Var&);
 	};
 
-	class RNN :public Module {
+	class RNNCell :public Module {
 		size_t m = 0, n = 0;
 		bool if_b = true, if_tanh = true;
 		Var wih, whh, w_b;
 	public:
 		//A var to storage the hidden states.
-		Var h_states, h_states_tmp;
-		RNN(size_t in_features, size_t out_features,
+		Var h_states;
+		RNNCell(size_t in_features, size_t out_features,
 			bool bias = true, bool nonlinearity = true);
+		Var forward(Var&) override;
+	};
+
+	class RNN {
+		RNNCell rnn_cell;
+	public:
+		size_t m, n;
+		Var h_s_in, h_s_out;
+		RNN(size_t in_features, size_t out_features, bool bias = true, bool nonlinearity = true) :
+			rnn_cell(in_features, out_features, bias, nonlinearity),
+			m(in_features), n(out_features) {}
+
+		std::vector<Var> operator()(std::vector<Var>&);
+		void init(size_t batch_size);
+		void cycle();
+	};
+
+	class LSTM :public Module {
+		size_t m = 0, n = 0;
+		bool if_b = true;
+		Var w_ii, w_hi, w_if, w_hf, w_ig, w_hg, w_io, w_ho;
+		Var b_i, b_f, b_g, b_o;
+
+	public:
+		//A var to storage the hidden states.
+		Var h_s, h_s_tmp, c_s, c_s_tmp;
+		LSTM(size_t in_features, size_t out_features,
+			bool bias = true);
 		//Clear the hidden states.
 		void init(size_t batch_size);
 		void cycle();
@@ -172,6 +203,12 @@ namespace nn {
 		Var forward(Var&);
 	};
 
+	class Sigmoid :public Module {
+	public:
+		Sigmoid() = default;
+		Var forward(Var&);
+	};
+
 	class Sequential :public Module {
 		std::vector<std::shared_ptr<Module>> seq_data;
 	public:
@@ -185,7 +222,6 @@ namespace nn {
 	};
 
 	
-
 	//-------------------Functions--------------------------
 	Var zeros(size_t m, size_t n);
 	Var ones(size_t m, size_t n);

@@ -60,6 +60,14 @@ namespace nn {
 						num1->grad.data[i][j] += (1.0 - tmp_num * tmp_num) * grad[i][j];
 					}
 				break;
+			case nn::Var::sig:
+				for (size_t i = 0; i < data.shape.first; ++i)
+					for (size_t j = 0; j < data.shape.second; ++j) {
+						auto tmp_num = ::pow(2.718281828459, -num1->data.data[i][j]);
+						num1->grad.data[i][j] += tmp_num / 
+							::pow(1.0 + tmp_num, 2.0) * grad[i][j];
+					}
+				break;
 			case nn::Var::ab:
 				for (size_t i = 0; i < data.shape.first; ++i)
 					for (size_t j = 0; j < data.shape.second; ++j) {

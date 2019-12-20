@@ -21,10 +21,10 @@ namespace nn {
 		return data[n];
 	}
 	Var::~Var() {}
-	Var::Var(int m, int n, bool init_random, double rand_mean, double rand_std) :data(m, n) {
+	Var::Var(int m, int n, bool init_random, double rand_mean, double rand_range) :data(m, n) {
 		if (init_random) {
 			std::default_random_engine e;
-			std::normal_distribution<> n(rand_mean, rand_std);
+			std::uniform_real_distribution<> n(-rand_mean - rand_range, rand_mean + rand_range);
 			for (auto& p : data.data)
 				for (auto& q : p)
 					q = n(e);
@@ -209,6 +209,15 @@ namespace nn {
 			graph_ptr = ans.num1 = std::make_shared<Var>(*this);
 		return ans;
 	}
+	Var Var::sigmoid() {
+		Var ans;
+		ans.op = sig;
+		if (graph_ptr)
+			ans.num1 = graph_ptr;
+		else
+			graph_ptr = ans.num1 = std::make_shared<Var>(*this);
+		return ans;
+	}
 	Var Var::mean() {
 		Var ans;
 		ans.op = means_op;
@@ -283,6 +292,13 @@ namespace nn {
 				for (size_t j = 0; j < num1->shape().second; ++j)
 					data.data[i][j] = ::tanh(num1->data.data[i][j]);
 			break;
+		case nn::Var::sig:
+			num1->cal(visited);
+			data = Matrix(num1->shape().first, num1->shape().second);
+			for (size_t i = 0; i < num1->shape().first; ++i)
+				for (size_t j = 0; j < num1->shape().second; ++j)
+					data.data[i][j] = 1.0 / (1.0 + ::pow(2.718281828459, -num1->data.data[i][j]));
+			break;
 		case nn::Var::ab:
 			num1->cal(visited);
 			data = Matrix(num1->shape().first, num1->shape().second);
@@ -328,22 +344,25 @@ namespace nn {
 		else
 			return graph_ptr->graph();
 	}
-
 	Var& Var::graph_data() {
 		if (!graph_ptr)
 			return *this;
 		else
 			return graph_ptr->graph_data();
 	}
+	void Var::set_data(const Matrix& rhs) {
+		graph_data().data = rhs;
+	}
+	void Var::set_data(const Var& rhs) {
+		graph_data().data = rhs._data();
+	}
 
-	Matrix Var::_data() {
+	Matrix Var::_data() const {
 		return graph().data;
 	}
-
-	Matrix Var::_grad() {
+	Matrix Var::_grad() const {
 		return graph().grad;
 	}
-
 	bool Var::empty() const {
 		return data.empty();
 	}
