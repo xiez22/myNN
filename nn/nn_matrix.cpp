@@ -101,8 +101,15 @@ namespace nn {
 		return ans;
 	}
 	void Matrix::print() const {
-		std::cout << "[" << std::endl;
+		std::cout << "[";
+		bool first_line_flag = true;
 		for (auto p : data) {
+		    if (first_line_flag) {
+		        first_line_flag = false;
+		    }
+		    else {
+		        std::cout << std::endl;
+		    }
 			std::cout << "[";
 			bool flag = true;
 			for (auto q : p) {
@@ -112,7 +119,7 @@ namespace nn {
 					std::cout << " ";
 				std::cout << q;
 			}
-			std::cout << "]" << std::endl;
+			std::cout << "]";
 		}
 		std::cout << "]" << std::endl;
 	}

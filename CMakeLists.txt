@@ -1,12 +1,10 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.5)
 project(myNN)
 
-set(CMAKE_CXX_STANDARD 14)
-
-include_directories(nn)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
 add_executable(myNN
-        nn/nn.h
         nn/nn_functions.cpp
         nn/nn_grad.cpp
         nn/nn_matrix.cpp
@@ -14,3 +12,7 @@ add_executable(myNN
         nn/nn_tensor.cpp
         nn/nn_var.cpp
         sample.cpp)
+
+target_include_directories(myNN
+        PRIVATE
+            nn)
